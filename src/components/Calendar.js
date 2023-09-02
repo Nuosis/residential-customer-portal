@@ -1,7 +1,8 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline'
+import Slider from './Slider'
 
 const days = [
   { date: '2021-12-27' },
@@ -65,6 +66,10 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+const handleSliderChange = (newValue) => {
+    setSelectedHoursBooked(newValue);
+};
+
 export default function Calendar() {
   return (
     <div className="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
@@ -119,8 +124,10 @@ export default function Calendar() {
         </div>
       </div>
       <section className="mt-12 md:mt-0 md:pl-14">
-        <h2 className="text-base font-semibold leading-6 text-gray-900">
-          Schedule for <time dateTime="2022-01-21">January 21, 2022</time>
+        <></>
+      <Slider className="mb-2" min={2} max={5} step={0.5} fluid={false} question="Estimate of Time to Book" onSliderChange={handleSliderChange} />
+        <h2 className="mt-2 text-base font-semibold leading-6 text-gray-900">
+          Niki's Schedule for <time dateTime="2022-01-21">January 21, 2022</time>
         </h2>
         <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500">
           {meetings.map((meeting) => (

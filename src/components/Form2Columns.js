@@ -1,14 +1,45 @@
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
+import { Fragment, useState } from 'react'
+import { Listbox, Transition } from '@headlessui/react'
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import MyListbox from './Mylistbox'
+import Slider from './Slider'
+
+const cleanLength = [
+    { id: 1, name: 'Recently (Less than 2 weeks)' },
+    { id: 2, name: 'Not too long ago (within the last month)' },
+    { id: 3, name: 'Its been a while (more than a month ago)' },
+    ];
+const houseSizes = [
+    { id: 1, name: 'Small (less than four bathrooms+bedrooms)' },
+    { id: 2, name: 'Average (less than six bathrooms+bedrooms)' },
+    { id: 3, name: 'Large (More than six bathrooms+bedrooms)' },
+    ];
+const hoursBooked = 2;
+
+
+function classNames(...classes) {
+    return classes.filter(Boolean).join(' ')
+}
 
 export default function Form2Columns() {
+    const [selectedHouseSize, setSelectedHouseSize] = useState(houseSizes[1]);
+    const [selectedCleanLength, setSelectedCleanLength] = useState(cleanLength[0]);
+    const [selectedHoursBooked, setSelectedHoursBooked] = useState(hoursBooked);
+    const input=houseSizes
+
+    const handleSliderChange = (newValue) => {
+        setSelectedHoursBooked(newValue);
+    };
+
     return (
         <div className="space-y-10 md:divide-x md:divide-gray-200 bg-gray-50">
             <div className="grid grid-cols-1 gap-x-0 gap-y-8 md:grid-cols-2">
                 <div className="px-4 sm:px-0">
-                    <h2 className="text-base font-semibold leading-7 text-gray-900">Profile</h2>
-                    <p className="mt-1 text-sm leading-6 text-gray-600">
-                        This information will be displayed publicly so be careful what you share.
-                    </p>
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">Time Estimator</h2>
+                    <MyListbox label="How large is your house?" input={houseSizes} setSelected={setSelectedHouseSize} selected={selectedHouseSize} />
+                    <MyListbox label="How long since it was professionally cleaned?" input={cleanLength} setSelected={setSelectedCleanLength} selected={selectedCleanLength} />
+                    <Slider min={2} max={5} step={0.5} fluid={false} question="Estimate of Time to Book" onSliderChange={handleSliderChange} />
                 </div>
 
                 <form className=" md:col-span-1">
