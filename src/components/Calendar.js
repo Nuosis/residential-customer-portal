@@ -61,18 +61,23 @@ const meetings = [
   },
   // More meetings...
 ]
+const hoursBooked = 2;
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
-}
-
-const handleSliderChange = (newValue) => {
-    setSelectedHoursBooked(newValue);
 };
 
 export default function Calendar() {
+  const [selectedHoursBooked, setSelectedHoursBooked] = useState(hoursBooked);
+  const handleSliderChange = (newValue) => {
+      setSelectedHoursBooked(newValue);
+  };
+
   return (
     <div className="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
+      {
+        //CALENDAR
+      }
       <div className="md:pr-14">
         <div className="flex items-center">
           <h2 className="flex-auto text-sm font-semibold text-gray-900">January 2022</h2>
@@ -123,11 +128,13 @@ export default function Calendar() {
           ))}
         </div>
       </div>
+      {
+        //Side Panel
+      }
       <section className="mt-12 md:mt-0 md:pl-14">
         <></>
-      <Slider className="mb-2" min={2} max={5} step={0.5} fluid={false} question="Estimate of Time to Book" onSliderChange={handleSliderChange} />
         <h2 className="mt-2 text-base font-semibold leading-6 text-gray-900">
-          Niki's Schedule for <time dateTime="2022-01-21">January 21, 2022</time>
+          Niki`s Availability for <time dateTime="2022-01-21">January 21, 2022</time>
         </h2>
         <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500">
           {meetings.map((meeting) => (

@@ -1,23 +1,35 @@
-import React from "react";
+import React, { useState } from 'react';
 
-function Slider({ min, max, step, fluid, question }) {
-    const [value, setValue] = React.useState(min);
+function Slider({ min, max, step, fluid, question, onSliderChange, unit }) {
+    const [value, setValue] = useState(min);
 
-        return (
-            <div className="relative mt-2">
-                <label className="block text-sm font-medium leading-6 text-gray-900">{question}</label>
-                <input
-                    type="range"
-                    min={min}
-                    max={max}
-                    step={fluid ? "any" : step}
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    className="w-full h-1.5 mt-2 bg-gray-300 rounded-md focus:ring-indigo-600"
-                />
-                <div className="text-gray-900">{value}</div>
-            </div>
-        );
+    const handleChange = (e) => {
+        const newValue = parseFloat(e.target.value);
+        setValue(newValue);
+        onSliderChange(newValue);  // update the parent component state
+    };
+
+    return (
+        <div className="space-y-4">
+        <label className="mt-4 block text-sm font-medium leading-6 text-gray-900">
+            {question}
+        </label>
+        <div className="flex items-center space-x-4">
+            <input
+            type="range"
+            min={min}
+            max={max}
+            step={fluid ? "any" : step}
+            value={value}
+            onChange={handleChange}
+            className="flex-grow h-1.5 bg-gray-300 rounded-md focus:ring-indigo-600"
+            />
+            <span className="text-xs text-gray-900">
+            {`${value}${unit ? ` ${unit}` : ''}`}
+            </span>
+        </div>
+        </div>
+    );
 }
 
 export default Slider;

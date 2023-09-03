@@ -1,7 +1,10 @@
 import Image from 'next/image'
+import { useState } from 'react'
 import Calendar from '@/components/Calendar'
 import Header from '@/components/Header'
 import Form2Columns from '@/components/Form2Columns'
+import SideOverWithHeader from '@/components/SideOverWithHeader'
+import CalendarWithDayView from '@/components/CalendarWithDayView'
 
 export default function Home() {
   return (
@@ -9,8 +12,7 @@ export default function Home() {
       <Header>
       </Header>
       <div className="mt-6" >
-        <Calendar>
-        </Calendar>
+        <CalendarWithDayView/>
       </div>
       <div className="mt-6" >
         <Form2Columns>
