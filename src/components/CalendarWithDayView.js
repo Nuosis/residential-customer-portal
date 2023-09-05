@@ -3,50 +3,78 @@ import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalI
 import { Menu, Transition } from '@headlessui/react'
 import SideOverWithHeader from './SideOverWithHeader'
 
-const days = [
-    { date: '2021-12-27' },
-    { date: '2021-12-28' },
-    { date: '2021-12-29' },
-    { date: '2021-12-30' },
-    { date: '2021-12-31' },
-    { date: '2022-01-01', isCurrentMonth: true },
-    { date: '2022-01-02', isCurrentMonth: true },
-    { date: '2022-01-03', isCurrentMonth: true },
-    { date: '2022-01-04', isCurrentMonth: true },
-    { date: '2022-01-05', isCurrentMonth: true },
-    { date: '2022-01-06', isCurrentMonth: true },
-    { date: '2022-01-07', isCurrentMonth: true },
-    { date: '2022-01-08', isCurrentMonth: true },
-    { date: '2022-01-09', isCurrentMonth: true },
-    { date: '2022-01-10', isCurrentMonth: true },
-    { date: '2022-01-11', isCurrentMonth: true },
-    { date: '2022-01-12', isCurrentMonth: true },
-    { date: '2022-01-13', isCurrentMonth: true },
-    { date: '2022-01-14', isCurrentMonth: true },
-    { date: '2022-01-15', isCurrentMonth: true },
-    { date: '2022-01-16', isCurrentMonth: true },
-    { date: '2022-01-17', isCurrentMonth: true },
-    { date: '2022-01-18', isCurrentMonth: true },
-    { date: '2022-01-19', isCurrentMonth: true },
-    { date: '2022-01-20', isCurrentMonth: true, isToday: true },
-    { date: '2022-01-21', isCurrentMonth: true },
-    { date: '2022-01-22', isCurrentMonth: true, isSelected: true },
-    { date: '2022-01-23', isCurrentMonth: true },
-    { date: '2022-01-24', isCurrentMonth: true },
-    { date: '2022-01-25', isCurrentMonth: true },
-    { date: '2022-01-26', isCurrentMonth: true },
-    { date: '2022-01-27', isCurrentMonth: true },
-    { date: '2022-01-28', isCurrentMonth: true },
-    { date: '2022-01-29', isCurrentMonth: true },
-    { date: '2022-01-30', isCurrentMonth: true },
-    { date: '2022-01-31', isCurrentMonth: true },
-    { date: '2022-02-01' },
-    { date: '2022-02-02' },
-    { date: '2022-02-03' },
-    { date: '2022-02-04' },
-    { date: '2022-02-05' },
-    { date: '2022-02-06' },
-    ]
+function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+function getMonthName(input) {
+        let monthNumber;
+        if (typeof input === 'string') {
+            const date = new Date(input);
+            if (isNaN(date.getTime())) {
+                return 'Invalid date string';
+            }
+            monthNumber = date.getMonth() + 1; // Months are 0-based in Date objects
+        } else if (typeof input === 'number') {
+            monthNumber = input;
+        } else {
+            return 'Invalid input type';
+        }
+    
+        const date = new Date();
+        date.setMonth(monthNumber - 1);
+    
+        return date.toLocaleString('en-US', { month: 'long' });
+    }
+
+function daysArray(thisDate = new Date(), selectedDate) {
+        // Validate if the passed value is a Date object
+        if (!(thisDate instanceof Date)) {
+            return "Invalid date";
+        }
+    
+        const daysArray = [];
+    
+        // Get the first day of the month
+        const firstDayOfMonth = new Date(thisDate.getFullYear(),thisDate.getMonth(), 1);
+    
+        // Get the day name of the first day of the month
+        const firstDayName = firstDayOfMonth.toLocaleString('en-US', { weekday: 'long' });
+    
+        // Determine the Monday prior to the 1st of the month
+        const mondayPrior = new Date(firstDayOfMonth);
+        mondayPrior.setDate(firstDayOfMonth.getDate() - ((firstDayOfMonth.getDay() + 6) % 7));
+    
+        // Determine the next Sunday after the end of the month
+        const lastDayOfMonth = new Date(thisDate.getFullYear(), thisDate.getMonth() + 1, 0);
+        const nextSunday = new Date(lastDayOfMonth);
+        nextSunday.setDate(lastDayOfMonth.getDate() + (7 - lastDayOfMonth.getDay()));
+    
+        let currentDate = new Date(mondayPrior);
+    
+        while (currentDate <= nextSunday) {
+            const isCurrentMonth = currentDate.getMonth() === thisDate.getMonth();
+            const isToday = currentDate.toDateString() === new Date().toDateString();
+                const isSelected = currentDate.toDateString() === new Date(selectedDate).toDateString();
+        
+        daysArray.push({
+            date: formatDate(new Date(currentDate)), // Formatted date
+            isCurrentMonth,
+            isToday,
+            isSelected
+        });
+    
+        currentDate.setDate(currentDate.getDate() + 1);
+        }
+    
+        return daysArray;
+    }
+
+// init calendar dates based on today
+
 const hours = Array.from({ length: 24 }, (_, index) => index); // Generate array of hours (0 to 23)
 const TimeLabels = () => (
         <div className="sticky left-0 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
@@ -61,39 +89,76 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
     }
 
-export default function CalendarWithDayView() {
+export default function CalendarWithDayView({cleaner, hoursBooked, setHoursBooked}) {
     const [open, setOpen] = useState(false);
     const container = useRef(null)
     const containerNav = useRef(null)
     const containerOffset = useRef(null)
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [displayDate, setDisplayDate] = useState(formatDate(new Date()));
+    const [days, setDays] = useState(daysArray(new Date(displayDate), selectedDate));
 
-    useEffect(() => {
-        // Calculate the range of hours to display (current hour +/- 2)
-        const currentHour = new Date().getHours();
-        const startHour = Math.max(currentHour - 2, 0);
-        const endHour = Math.min(currentHour + 2, 23);
+    function handleMonthChange({direction}){
+        
+        const currentDisplayDate = new Date(displayDate);
+        if (direction === 'increase') {
+            currentDisplayDate.setMonth(currentDisplayDate.getMonth() + 1);
+        } else {
+            currentDisplayDate.setMonth(currentDisplayDate.getMonth() - 1);
+        }
+        currentDisplayDate.setDate(15);
+        console.log(currentDisplayDate)
+        
+        const newDate = formatDate(currentDisplayDate);
+        setDisplayDate(newDate);
+        setDays(daysArray(new Date(newDate), selectedDate));
+    };
 
-        // Set the container scroll position based on the current time.
-        const currentMinute = new Date().getHours() * 60
-        container.current.scrollTop =
-        ((container.current.scrollHeight - containerNav.current.offsetHeight - containerOffset.current.offsetHeight) *
-            currentMinute)
-        1440
-    }, [])
+    function changeSelectedDate(newSelectedDate) {
+        console.log(newSelectedDate)
+        const newDays = days.map(day => {
+            if (day.date === newSelectedDate) {
+                return { ...day, isSelected: true };
+            } else if (day.isSelected) {
+                return { ...day, isSelected: false };
+            }
+            return day;
+            });
+        
+        setDays(newDays);
+        setSelectedDate(newSelectedDate);
+    };
 
     return (
         <div className="flex h-full flex-col">
             <header className="flex flex-none items-center justify-between border-b border-gray-200 px-6 py-4">
                 <div>
                     <h1 className="text-base font-semibold leading-6 text-gray-900">
-                        <time dateTime="2022-01-22" className="sm:hidden">
-                        Niki`s Schedule
-                        </time>
-                        <time dateTime="2022-01-22" className="hidden sm:inline">
-                        Niki`s Schedule
-                        </time>
+                        {cleaner}`s Schedule
                     </h1>
-                    <p className="mt-1 text-sm text-gray-500">Saturday</p>
+                    {/*display day name*/}
+                    <div className="mt-1 text-sm text-gray-500 sm:hidden">
+                        <button
+                            type="button"
+                            className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                            onClick={() => handleMonthChange({ direction: 'decrease' })}
+                            >
+                            <span className="sr-only">Previous Day</span>
+                            <ChevronLeftIcon className="h-5 w-5" aria-hidden="true"/>
+                        </button>
+                        {new Date(selectedDate).toLocaleString('en-US', { weekday: 'long' })}
+                        <button
+                            type="button"
+                            className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                            onClick={() => handleMonthChange({ direction: 'increase' })}
+                            >
+                            <span className="sr-only">Next month</span>
+                            <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <div className="mt-1 text-sm text-gray-500 hidden sm:inline">
+                        {new Date(selectedDate).toLocaleString('en-US', { weekday: 'long' })}
+                    </div>
                 </div>
                 <div className="mt-4 flex md:ml-4 md:mt-0">
                 <button
@@ -105,69 +170,72 @@ export default function CalendarWithDayView() {
                 </button>
                 </div>
             </header>
-            {console.log("Value of open is: ", open)}
-            {<SideOverWithHeader title="Time Estimator" subtext="answer these questions to generate a suggested amount of hours to book" open={open} setOpen={setOpen}  />}
+            {<SideOverWithHeader title="Time Estimator" subtext="answer these questions to generate a suggested amount of hours to book" open={open} setOpen={setOpen} hoursBooked={hoursBooked} setHoursBooked={setHoursBooked}/>}
             <div className="isolate flex flex-auto overflow-hidden bg-white max-h-96">
                  {/* Calendar */}
                 <div className="hidden w-1/2 max-w-md flex-none border-l border-gray-100 px-8 py-10 md:block">
-                <div className="flex items-center text-center text-gray-900">
-                    <button
-                    type="button"
-                    className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
-                    >
-                    <span className="sr-only">Previous month</span>
-                    <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-                    </button>
-                    <div className="flex-auto text-sm font-semibold">January 2022</div>
-                    <button
-                    type="button"
-                    className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
-                    >
-                    <span className="sr-only">Next month</span>
-                    <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-                    </button>
-                </div>
-                <div className="mt-6 grid grid-cols-7 text-center text-xs leading-6 text-gray-500">
-                    <div>M</div>
-                    <div>T</div>
-                    <div>W</div>
-                    <div>T</div>
-                    <div>F</div>
-                    <div>S</div>
-                    <div>S</div>
-                </div>
-                <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
-                    {days.map((day, dayIdx) => (
-                    <button
-                        key={day.date}
+                    <div className="flex items-center text-center text-gray-900">
+                        <button
                         type="button"
-                        className={classNames(
-                        'py-1.5 hover:bg-gray-100 focus:z-10',
-                        day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
-                        (day.isSelected || day.isToday) && 'font-semibold',
-                        day.isSelected && 'text-white',
-                        !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900',
-                        !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-400',
-                        day.isToday && !day.isSelected && 'text-indigo-600',
-                        dayIdx === 0 && 'rounded-tl-lg',
-                        dayIdx === 6 && 'rounded-tr-lg',
-                        dayIdx === days.length - 7 && 'rounded-bl-lg',
-                        dayIdx === days.length - 1 && 'rounded-br-lg'
-                        )}
-                    >
-                        <time
-                        dateTime={day.date}
-                        className={classNames(
-                            'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
-                            day.isSelected && day.isToday && 'bg-indigo-600',
-                            day.isSelected && !day.isToday && 'bg-gray-900'
-                        )}
+                        className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                        onClick={() => handleMonthChange({ direction: 'decrease' })}
                         >
-                        {day.date.split('-').pop().replace(/^0/, '')}
-                        </time>
-                    </button>
-                    ))}
-                </div>
+                        <span className="sr-only">Previous month</span>
+                        <ChevronLeftIcon className="h-5 w-5" aria-hidden="true"/>
+                        </button>
+                        {/* set month and year*/}
+                        <div className="flex-auto text-sm font-semibold">{getMonthName(displayDate)} {new Date(displayDate).getFullYear()}</div>
+                        <button
+                        type="button"
+                        className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                        onClick={() => handleMonthChange({ direction: 'increase' })}
+                        >
+                        <span className="sr-only">Next month</span>
+                        <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <div className="mt-6 grid grid-cols-7 text-center text-xs leading-6 text-gray-500">
+                        <div>M</div>
+                        <div>T</div>
+                        <div>W</div>
+                        <div>T</div>
+                        <div>F</div>
+                        <div>S</div>
+                        <div>S</div>
+                    </div>
+                    <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
+                        {days.map((day, dayIdx) => (
+                        <button
+                            key={day.date}
+                            type="button"
+                            onClick={() => changeSelectedDate(day.date)}
+                            className={classNames(
+                            'py-1.5 hover:bg-gray-100 focus:z-10',
+                            day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
+                            (day.isSelected || day.isToday) && 'font-semibold',
+                            day.isSelected && 'text-white',
+                            !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900',
+                            !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-400',
+                            day.isToday && !day.isSelected && 'text-indigo-600',
+                            dayIdx === 0 && 'rounded-tl-lg',
+                            dayIdx === 6 && 'rounded-tr-lg',
+                            dayIdx === days.length - 7 && 'rounded-bl-lg',
+                            dayIdx === days.length - 1 && 'rounded-br-lg'
+                            )}
+                        >
+                            <time
+                            dateTime={day.date}
+                            className={classNames(
+                                'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
+                                day.isSelected && day.isToday && 'bg-indigo-600',
+                                day.isSelected && !day.isToday && 'bg-gray-900'
+                            )}
+                            >
+                            {day.date.split('-').pop().replace(/^0/, '')}
+                            </time>
+                        </button>
+                        ))}
+                    </div>
                 </div>
                 {/* Day View */}
                 <div ref={container} className="flex flex-auto flex-col overflow-y-scroll">

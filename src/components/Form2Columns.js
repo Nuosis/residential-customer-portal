@@ -10,7 +10,9 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export default function Form2Columns(hoursBooked) {
+export default function Form2Columns({rate, hoursBooked, cleaner}) {
+
+    const saleAmount = rate * hoursBooked;
 
     return (
         <div className="space-y-10 md:divide-x md:divide-gray-200 bg-gray-50">
@@ -23,7 +25,7 @@ export default function Form2Columns(hoursBooked) {
                         <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div className="sm:col-span-4">
                                 <label htmlFor="website" className="block text-sm font-medium leading-6 text-gray-900">
-                                Hours Selected $hours
+                                You have booked {cleaner} for {hoursBooked} hours
                                 </label>
                             </div>
 
@@ -45,7 +47,7 @@ export default function Form2Columns(hoursBooked) {
                     </div>
                     <div className="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
                         <label>
-                            $250.00 plus GST
+                            ${saleAmount} plus GST
                         </label>
                         <button
                         type="submit"

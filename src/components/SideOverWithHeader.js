@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import MyListbox from './Mylistbox'
@@ -14,17 +14,53 @@ const houseSizes = [
     { id: 2, name: 'Average (less than six bathrooms+bedrooms)' },
     { id: 3, name: 'Large (More than six bathrooms+bedrooms)' },
     ];
-const hoursBooked = 2;
 
-export default function SideOverWithHeader({title, subtext, open, setOpen }) {
+export default function SideOverWithHeader({title, subtext, open, setOpen, hoursBooked, setHoursBooked}) {
     const [selectedHouseSize, setSelectedHouseSize] = useState(houseSizes[1]);
     const [selectedCleanLength, setSelectedCleanLength] = useState(cleanLength[0]);
-    const [selectedHoursBooked, setSelectedHoursBooked] = useState(hoursBooked);
     const input=houseSizes
 
-    const handleSliderChange = (newValue) => {
-        setSelectedHoursBooked(newValue);
+    const handleSliderChange = (e) => {
+        setHoursBooked(e);
     };
+
+    const handleSelectionChange = (selectedHouseSizes, selectedCleanLength) => {
+        const selectedCleanLengthID=selectedCleanLength
+        const selectedHouseSizeID=selectedHouseSize.id
+        
+        if (selectedHouseSizeID===3) {
+            //  x large house
+            handleSliderChange(5)
+            } else if (selectedHouseSizeID===1) {
+                //  small house
+                if (selectedCleanLengthID===1) {
+                    //  recently cleaned
+                    handleSliderChange(2)
+                    } else if (selectedCleanLengthID===2) {
+                        //  cleaned within last month
+                        handleSliderChange(3)
+                        } else {
+                            //  cleaned > month
+                            handleSliderChange(4)
+                        }
+                } else {
+                    //  average house
+                    if (selectedCleanLengthID===3) {
+                        //  > 1 month
+                        handleSliderChange(5)
+                        } else if (selectedCleanLengthID===2) {
+                            //  cleaned within last month
+                            handleSliderChange(3.5)
+                            } else {
+                                //  cleaned recently
+                                handleSliderChange(2)
+                            }
+                }
+
+        }
+
+
+
     return (
         <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -70,9 +106,23 @@ export default function SideOverWithHeader({title, subtext, open, setOpen }) {
                         <div className="relative flex-1 px-4 py-6 sm:px-6">
                             {/* Your content */}
                             <h2 className="text-base font-semibold leading-7 text-gray-900">Time Estimator</h2>
-                            <MyListbox label="How large is your house?" input={houseSizes} setSelected={setSelectedHouseSize} selected={selectedHouseSize} />
-                            <MyListbox label="How long since it was professionally cleaned?" input={cleanLength} setSelected={setSelectedCleanLength} selected={selectedCleanLength} />
-                            <Slider min={2} max={5} step={0.5} fluid={false} question="Estimate of Time to Book" onSliderChange={handleSliderChange} unit="hours"/>
+                            <MyListbox 
+                                label="How large is your house?" 
+                                input={houseSizes} 
+                                setSelected={setSelectedHouseSize} 
+                                selected={selectedHouseSize} 
+                                onSelectionChange={() => handleSelectionChange(selectedHouseSize.id, selectedCleanLength.id)} 
+                            />
+                            <MyListbox 
+                                label="How long since it was professionally cleaned?" 
+                                input={cleanLength} 
+                                setSelected={setSelectedCleanLength} 
+                                selected={selectedCleanLength} 
+                                onSelectionChange={() => handleSelectionChange(selectedHouseSize.id, selectedCleanLength.id)}
+                            />
+
+                            {/*console.log("SideOver.js", {hoursBooked})*/}
+                            <Slider min={2} max={5} step={0.5} hoursBooked={hoursBooked} setHoursBooked={setHoursBooked} fluid={false} onSliderChange={handleSliderChange} question="Estimate of Time to Book" unit="hours"/>
                         </div>
                     </div>
                     </Dialog.Panel>

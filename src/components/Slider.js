@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 
-function Slider({ min, max, step, fluid, question, onSliderChange, unit }) {
-    const [value, setValue] = useState(min);
+function Slider({ min, max, step, fluid, hoursBooked, setHoursBooked, question, unit }) {
 
     const handleChange = (e) => {
         const newValue = parseFloat(e.target.value);
-        setValue(newValue);
-        onSliderChange(newValue);  // update the parent component state
+        setHoursBooked(newValue); // update the parent component state
     };
 
     return (
@@ -20,12 +18,12 @@ function Slider({ min, max, step, fluid, question, onSliderChange, unit }) {
             min={min}
             max={max}
             step={fluid ? "any" : step}
-            value={value}
+            value={hoursBooked}
             onChange={handleChange}
             className="flex-grow h-1.5 bg-gray-300 rounded-md focus:ring-indigo-600"
             />
             <span className="text-xs text-gray-900">
-            {`${value}${unit ? ` ${unit}` : ''}`}
+            {`${hoursBooked}${unit ? ` ${unit}` : ''}`}
             </span>
         </div>
         </div>
