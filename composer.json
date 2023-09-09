@@ -1,0 +1,5 @@
+{
+    "require": {
+        "myfmbutler/myfmapilibrary-for-js": "^2.0"
+    }
+}

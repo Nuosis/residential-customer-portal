@@ -1,0 +1,48 @@
+{
+    "packages": [
+        {
+            "name": "myfmbutler/myfmapilibrary-for-js",
+            "version": "2.0.0",
+            "version_normalized": "2.0.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/myFMbutler/myFMApiLibrary-for-JS.git",
+                "reference": "9b588f2d6ac177369c74615c4ad1569f62eab98a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/myFMbutler/myFMApiLibrary-for-JS/zipball/9b588f2d6ac177369c74615c4ad1569f62eab98a",
+                "reference": "9b588f2d6ac177369c74615c4ad1569f62eab98a",
+                "shasum": ""
+            },
+            "time": "2020-06-09T09:50:05+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Tests\\": "tests/",
+                    "Lesterius\\FileMakerApi\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "gpl-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Lesterius",
+                    "email": "infoFR@lesterius.com",
+                    "homepage": "https://www.lesterius.com"
+                }
+            ],
+            "description": "(Claris) FileMaker 19 API Javascript wrapper",
+            "support": {
+                "issues": "https://github.com/myFMbutler/myFMApiLibrary-for-JS/issues",
+                "source": "https://github.com/myFMbutler/myFMApiLibrary-for-JS/tree/master"
+            },
+            "install-path": "../myfmbutler/myfmapilibrary-for-js"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}
