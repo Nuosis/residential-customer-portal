@@ -97,6 +97,7 @@ export default function CalendarWithDayView({cleaner, hoursBooked, setHoursBooke
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [displayDate, setDisplayDate] = useState(formatDate(new Date()));
     const [days, setDays] = useState(daysArray(new Date(displayDate), selectedDate));
+    const utcSelectedDate = `${selectedDate}T00:00:00Z`;
 
     function handleMonthChange({direction}){
         
@@ -115,7 +116,7 @@ export default function CalendarWithDayView({cleaner, hoursBooked, setHoursBooke
     };
 
     function changeSelectedDate(newSelectedDate) {
-        console.log(newSelectedDate)
+        setSelectedDate(newSelectedDate);
         const newDays = days.map(day => {
             if (day.date === newSelectedDate) {
                 return { ...day, isSelected: true };
@@ -124,9 +125,7 @@ export default function CalendarWithDayView({cleaner, hoursBooked, setHoursBooke
             }
             return day;
             });
-        
         setDays(newDays);
-        setSelectedDate(newSelectedDate);
     };
 
     return (
@@ -146,7 +145,7 @@ export default function CalendarWithDayView({cleaner, hoursBooked, setHoursBooke
                             <span className="sr-only">Previous Day</span>
                             <ChevronLeftIcon className="h-5 w-5" aria-hidden="true"/>
                         </button>
-                        {new Date(selectedDate).toLocaleString('en-US', { weekday: 'long' })}
+                        {new Date(utcSelectedDate).toLocaleString('en-US', { weekday: 'long', timeZone: 'UTC'  })}
                         <button
                             type="button"
                             className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
@@ -157,7 +156,8 @@ export default function CalendarWithDayView({cleaner, hoursBooked, setHoursBooke
                         </button>
                     </div>
                     <div className="mt-1 text-sm text-gray-500 hidden sm:inline">
-                        {new Date(selectedDate).toLocaleString('en-US', { weekday: 'long' })}
+                        {console.log("header update",utcSelectedDate)}
+                        {new Date(utcSelectedDate).toLocaleString('en-US', { weekday: 'long', timeZone: 'UTC' })}
                     </div>
                 </div>
                 <div className="mt-4 flex md:ml-4 md:mt-0">
@@ -251,11 +251,11 @@ export default function CalendarWithDayView({cleaner, hoursBooked, setHoursBooke
                                 style={{ gridTemplateRows: 'repeat(48, minmax(3.5rem, 1fr))' }}
                             >
                                 <div ref={containerOffset} className="row-end-1 h-7"></div>
-                                <div>
-                                <div className="sticky left-0 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
-                                    12AM
-                                </div>
-                                </div>
+                                    <div>
+                                        <div className="sticky left-0 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
+                                            12AM
+                                        </div>
+                                    </div>
                                 <div />
                                 <div>
                                 <div className="sticky left-0 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">

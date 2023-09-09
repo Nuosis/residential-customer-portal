@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import SideOverWithHeader from './SideOverWithHeader';
 
 export default function Header({cleaner}) {
         return (
