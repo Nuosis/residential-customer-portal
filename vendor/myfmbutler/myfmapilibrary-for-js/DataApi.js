@@ -1,4 +1,6 @@
 "use strict";
+"use client";
+//const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
 class Exception {
     /**
@@ -1196,3 +1198,7 @@ class DataApi {
         this.version            = LASTVERSION;
     }
 }
+
+module.exports = {
+    DataApi,
+    };

@@ -1,9 +1,18 @@
-import Image from 'next/image'
 import { useState } from 'react'
 import Header from '@/components/Header'
 import Form2Columns from '@/components/Form2Columns'
-import SideOverWithHeader from '@/components/SideOverWithHeader'
 import CalendarWithDayView from '@/components/CalendarWithDayView'
+import { DataApi } from '@/myfmbutler/myfmapilibrary-for-js/DataApi'
+// see https://github.com/myFMbutler/myFMApiLibrary-for-JS for methods
+
+let options = {
+  'apiUrl': process.env.REACT_APP_SERVER,
+  'databaseName': process.env.REACT_APP_DATABASE_CD,
+  'login': process.env.REACT_APP_USERNAME,
+  'password': process.env.REACT_APP_PASSWORD,
+};
+let api = new DataApi(options);
+console.log("api options", api)
 
 export default function Home({cleaner = "Niki", rate = 75}) {
   const [hoursBooked, setHoursBooked] = useState(2);

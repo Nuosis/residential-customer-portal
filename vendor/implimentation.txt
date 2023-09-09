@@ -1,0 +1,16 @@
+See "https://github.com/myFMbutler/myFMApiLibrary-for-JS"
+Follow install instructions
+
+//run npm install xmlhttprequest
+
+Add "module.exports = {
+    DataApi,
+    };" 
+    to the end of DataApi.js
+
+    //"const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;"
+    //to the beginning of DataApi.js
+
+
+Copy vendor/index.js 
+
