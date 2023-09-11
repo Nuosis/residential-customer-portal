@@ -7,23 +7,7 @@ import { DataApi } from "@proofgeist/fmdapi";
 //see methods at "https://github.com/proofgeist/fmdapi"
 //review modification to next.config.js
 
-console.log('userName',process.env.FM_USERNAME);
-console.log('password',process.env.FM_PASSWORD);
-console.log('db',process.env.FM_DATABASE);
-console.log('server',process.env.FM_SERVER);
 
-const client = DataApi({
-  auth: {
-    username: "Dev",
-    password: "NatureNeedsNurture",
-  },
-  db: "clarityData",
-  server: "https://server.selectjanitorial.com",
-});
-//console.log("dAPI Auth Result",client);
-
-const result = await client.list({ layout: "dapiOrganization" });
-console.log("dAPI Result",result);
 
 export default function Home({cleaner = "Niki", rate = 75}) {
   const [hoursBooked, setHoursBooked] = useState(2);
