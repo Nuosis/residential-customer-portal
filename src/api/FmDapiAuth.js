@@ -8,9 +8,10 @@ const base64Encode = function(username,password){
 export default async function getFileMakerToken(server, database, userName, password) {
 
     const base64Value = base64Encode(userName, password);
-    console.log(base64Value);
+    
 
-    const url = 'https://'+server+'.com/fmi/data/vLatest/databases/'+database+'/sessions';
+    const url = 'https://'+server+'/fmi/data/vLatest/databases/'+database+'/sessions';
+    console.log(url);
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Basic ' + base64Value,
@@ -18,11 +19,12 @@ export default async function getFileMakerToken(server, database, userName, pass
 
     try {
         const response = await axios.post(url, {}, { headers });
+        console.log('call response:',response);
         const token = response.data.response.token;
         return token;
     } catch (error) {
-        console.error('Error obtaining FileMaker token:', error);
-        return error;
+        console.error('FMDapiAuth ERROR:', error);
+        throw error; // Throw the error back to be caught by the calling function
     }
 }
 
